@@ -1,11 +1,11 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../../context';
 import UserRoute from '../../components/routes/UserRoute';
 import CreatePostForm from '../../components/forms/CreatePostForm';
-import { useRouter, userRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import axios from 'axios';
-import { useState } from 'react';
 import { toast } from 'react-toastify';
+import PostList from '../../components/cards/PostList';
 
 export default function Home() {
   const [state, setState] = useContext(UserContext);
@@ -14,9 +14,24 @@ export default function Home() {
   // image
   const [image, setImage] = useState({});
   const [uploading, setUploading] = useState(false); // when the image is loading show the loading spinner
+  const [posts, setPosts] = useState([]);
 
   // route
   const router = useRouter();
+
+  useEffect(() => {
+    if (state && state.token) fetchUserPosts();
+  }, [state && state.token]);
+
+  const fetchUserPosts = async () => {
+    try {
+      const { data } = await axios.get('/user-posts');
+      // console.log("user posts => ", data);
+      setPosts(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const postSubmit = async (e) => {
     e.preventDefault();
@@ -76,7 +91,11 @@ export default function Home() {
             uploading={uploading}
             image={image}
           />
+          <br />
+          <PostList posts={posts} />
         </div>
+
+        {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
         <div className="col-md-4">Sidebar</div>
       </div>
     </UserRoute>
