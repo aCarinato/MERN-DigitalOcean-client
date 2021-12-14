@@ -35,13 +35,14 @@ export default function Home() {
 
   const postSubmit = async (e) => {
     e.preventDefault();
-    // console.log('post => ', content);
+    // console.log("post => ", content);
     try {
       const { data } = await axios.post('/create-post', { content, image });
-      // console.log('create post response => ', data);
+      console.log('create post response => ', data);
       if (data.error) {
         toast.error(data.error);
       } else {
+        fetchUserPosts();
         toast.success('Post created');
         setContent('');
         setImage({});
