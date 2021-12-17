@@ -15,19 +15,36 @@ export default function Home() {
   const [image, setImage] = useState({});
   const [uploading, setUploading] = useState(false); // when the image is loading show the loading spinner
   const [posts, setPosts] = useState([]);
+  // people
+  const [people, setPeople] = useState([]);
 
   // route
   const router = useRouter();
 
   useEffect(() => {
-    if (state && state.token) fetchUserPosts();
+    if (state && state.token) {
+      // newsFeed();
+      fetchUserPosts();
+      findPeople();
+    }
   }, [state && state.token]);
 
   const fetchUserPosts = async () => {
     try {
       const { data } = await axios.get('/user-posts');
-      // console.log("user posts => ", data);
+      console.log('from fetchUserPost. data => ', data);
       setPosts(data);
+      console.log('from fetchUserPost. posts (setPosts(data)) => ', posts);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const findPeople = async () => {
+    try {
+      const { data } = await axios.get('/find-people');
+      setPeople(data);
+      console.log('people => ', people);
     } catch (err) {
       console.log(err);
     }
@@ -90,12 +107,11 @@ export default function Home() {
     <UserRoute>
       <div className="container-fluid">
         <div className="row py-5">
-          <div className="col">
+          <div className="col text-center">
             <h1>News Feed</h1>
           </div>
         </div>
       </div>
-
       <div className="row py-3">
         <div className="col-md-8">
           <PostForm
@@ -107,11 +123,13 @@ export default function Home() {
             image={image}
           />
           <br />
-          <PostList posts={posts} handleDelete={handleDelete} />
+          {/* <PostList posts={posts} handleDelete={handleDelete} /> */}
         </div>
 
         {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
-        <div className="col-md-4">Sidebar</div>
+        <div className="col-md-4">
+          <pre>{JSON.stringify(people, null, 4)}</pre>
+        </div>
       </div>
     </UserRoute>
   );
