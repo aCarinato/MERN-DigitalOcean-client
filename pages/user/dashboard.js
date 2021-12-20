@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import PostList from '../../components/cards/PostList';
+import People from '../../components/cards/People';
 
 export default function Home() {
   const [state, setState] = useContext(UserContext);
@@ -103,6 +104,28 @@ export default function Home() {
     }
   };
 
+  const handleFollow = async (user) => {
+    // console.log("add this user to following list ", user);
+    try {
+      const { data } = await axios.put('/user-follow', { _id: user._id });
+      console.log('handle follow response => ', data);
+      // update local storage, update user, keep token
+      // let auth = JSON.parse(localStorage.getItem('auth'));
+      // auth.user = data;
+      // localStorage.setItem('auth', JSON.stringify(auth));
+      // // update context
+      // setState({ ...state, user: data });
+      // // update people state
+      // let filtered = people.filter((p) => p._id !== user._id);
+      // setPeople(filtered);
+      // // rerender the posts in newsfeed
+      // newsFeed();
+      // toast.success(`Following ${user.name}`);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <UserRoute>
       <div className="container-fluid">
@@ -123,12 +146,13 @@ export default function Home() {
             image={image}
           />
           <br />
-          {/* <PostList posts={posts} handleDelete={handleDelete} /> */}
+          <PostList posts={posts} handleDelete={handleDelete} />
         </div>
 
         {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
         <div className="col-md-4">
-          <pre>{JSON.stringify(people, null, 4)}</pre>
+          {/* <pre>{JSON.stringify(people, null, 4)}</pre> */}
+          <People people={people} handleFollow={handleFollow} />
         </div>
       </div>
     </UserRoute>

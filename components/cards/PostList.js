@@ -32,6 +32,7 @@ const PostList = ({ posts, handleDelete }) => {
               </span>
             </div>
             <div className="card-body">{renderHTML(post.content)}</div>
+            {/* <div className="card-body">{renderHTML(post.postedBy.name)}</div> */}
             <div className="card-footer">
               {post.image && <PostImage url={post.image.url} />}
 
@@ -42,7 +43,6 @@ const PostList = ({ posts, handleDelete }) => {
                 </div>
                 <CommentOutlined className="text-danger pt-2 h5 px-2" />
                 <div className="pt-2 pl-3">2 comments</div>
-
                 {state && state.user && state.user._id === post.postedBy._id && (
                   <>
                     <EditOutlined
