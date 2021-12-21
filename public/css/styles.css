@@ -8,3 +8,7 @@
 .active {
   background-color: navy;
 }
+
+.pointer {
+  cursor: pointer;
+}
