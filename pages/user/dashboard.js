@@ -7,6 +7,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import PostList from '../../components/cards/PostList';
 import People from '../../components/cards/People';
+import Link from 'next/link';
 
 export default function Home() {
   const [state, setState] = useContext(UserContext);
@@ -24,18 +25,16 @@ export default function Home() {
 
   useEffect(() => {
     if (state && state.token) {
-      // newsFeed();
-      fetchUserPosts();
+      newsFeed();
       findPeople();
     }
   }, [state && state.token]);
 
-  const fetchUserPosts = async () => {
+  const newsFeed = async () => {
     try {
-      const { data } = await axios.get('/user-posts');
-      console.log('from fetchUserPost. data => ', data);
+      const { data } = await axios.get('/news-feed');
+      // console.log("user posts => ", data);
       setPosts(data);
-      console.log('from fetchUserPost. posts (setPosts(data)) => ', posts);
     } catch (err) {
       console.log(err);
     }
@@ -60,7 +59,7 @@ export default function Home() {
       if (data.error) {
         toast.error(data.error);
       } else {
-        fetchUserPosts();
+        newsFeed();
         toast.success('Post created');
         setContent('');
         setImage({});
@@ -98,7 +97,7 @@ export default function Home() {
       if (!answer) return;
       const { data } = await axios.delete(`/delete-post/${post._id}`);
       toast.success('Post deleted');
-      fetchUserPosts();
+      newsFeed();
     } catch (err) {
       console.log(err);
     }
@@ -110,17 +109,17 @@ export default function Home() {
       const { data } = await axios.put('/user-follow', { _id: user._id });
       console.log('handle follow response => ', data);
       // update local storage, update user, keep token
-      // let auth = JSON.parse(localStorage.getItem('auth'));
-      // auth.user = data;
-      // localStorage.setItem('auth', JSON.stringify(auth));
-      // // update context
-      // setState({ ...state, user: data });
-      // // update people state
-      // let filtered = people.filter((p) => p._id !== user._id);
-      // setPeople(filtered);
-      // // rerender the posts in newsfeed
-      // newsFeed();
-      // toast.success(`Following ${user.name}`);
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      auth.user = data;
+      localStorage.setItem('auth', JSON.stringify(auth));
+      // update context
+      setState({ ...state, user: data });
+      // update people state
+      let filtered = people.filter((p) => p._id !== user._id); //select all users except the current one
+      setPeople(filtered);
+      // rerender the posts in newsfeed
+      newsFeed();
+      toast.success(`Following ${user.name}`);
     } catch (err) {
       console.log(err);
     }
@@ -150,8 +149,13 @@ export default function Home() {
         </div>
 
         {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
+
         <div className="col-md-4">
-          {/* <pre>{JSON.stringify(people, null, 4)}</pre> */}
+          {state && state.user && state.user.following && (
+            <Link href={`/user/following`}>
+              <a className="h6">{state.user.following.length} Following</a>
+            </Link>
+          )}
           <People people={people} handleFollow={handleFollow} />
         </div>
       </div>
