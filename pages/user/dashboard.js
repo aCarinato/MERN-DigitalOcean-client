@@ -125,6 +125,28 @@ export default function Home() {
     }
   };
 
+  const handleLike = async (_id) => {
+    // console.log('like this post => ', _id);
+    try {
+      const { data } = await axios.put('/like-post', { _id });
+      console.log('liked', data);
+      newsFeed();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleUnlike = async (_id) => {
+    // console.log('unlike this post => ', _id);
+    try {
+      const { data } = await axios.put('/unlike-post', { _id });
+      console.log('unliked', data);
+      newsFeed();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <UserRoute>
       <div className="container-fluid">
@@ -145,7 +167,12 @@ export default function Home() {
             image={image}
           />
           <br />
-          <PostList posts={posts} handleDelete={handleDelete} />
+          <PostList
+            posts={posts}
+            handleDelete={handleDelete}
+            handleLike={handleLike}
+            handleUnlike={handleUnlike}
+          />
         </div>
 
         {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
