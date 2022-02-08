@@ -73,7 +73,7 @@ const AuthForm = ({
         onChange={(e) => setEmail(e.target.value)}
         type="email"
         className="form-control"
-        placeholder="Enter name"
+        placeholder="Enter email address"
         disabled={profileUpdate}
       />
     </div>
