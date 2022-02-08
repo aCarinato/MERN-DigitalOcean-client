@@ -37,10 +37,21 @@ const PostList = ({ posts, handleDelete, handleLike, handleUnlike }) => {
               {post.image && <PostImage url={post.image.url} />}
 
               <div className="d-flex pt-2">
-                <HeartOutlined
+                {post.likes.includes(state.user._id) ? (
+                  <HeartFilled
+                    onClick={() => handleUnlike(post._id)}
+                    className="text-danger pt-2 h5 px-2"
+                  />
+                ) : (
+                  <HeartOutlined
+                    onClick={() => handleLike(post._id)}
+                    className="text-danger pt-2 h5 px-2"
+                  />
+                )}
+                {/* <HeartOutlined
                   onClick={() => handleLike(post._id)}
                   className="text-danger pt-2 h5 px-2"
-                />
+                /> */}
                 <div className="pt-2 pl-3" style={{ marginRight: '1rem' }}>
                   3 likes
                 </div>

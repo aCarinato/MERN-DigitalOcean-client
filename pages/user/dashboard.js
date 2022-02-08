@@ -129,7 +129,7 @@ export default function Home() {
     // console.log('like this post => ', _id);
     try {
       const { data } = await axios.put('/like-post', { _id });
-      console.log('liked', data);
+      // console.log('liked post', data);
       newsFeed();
     } catch (err) {
       console.log(err);
@@ -140,7 +140,7 @@ export default function Home() {
     // console.log('unlike this post => ', _id);
     try {
       const { data } = await axios.put('/unlike-post', { _id });
-      console.log('unliked', data);
+      // console.log('unliked post', data);
       newsFeed();
     } catch (err) {
       console.log(err);
