@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { UserContext } from '../../context';
 import { useRouter } from 'next/router';
+import { imageSource } from '../../functions';
 
 const PostList = ({ posts, handleDelete, handleLike, handleUnlike }) => {
   const [state] = useContext(UserContext);
@@ -23,7 +24,8 @@ const PostList = ({ posts, handleDelete, handleLike, handleUnlike }) => {
         posts.map((post) => (
           <div key={post._id} className="card mb-5">
             <div className="card-header">
-              <Avatar size={40}>{post.postedBy.name[0]}</Avatar>{' '}
+              {/* <Avatar size={40}>{post.postedBy.name[0]}</Avatar>{' '} */}
+              <Avatar size={40} src={imageSource(post.postedBy)} />
               <span className="pt-2 ml-3" style={{ marginLeft: '1rem' }}>
                 {post.postedBy.name}
               </span>
@@ -48,12 +50,8 @@ const PostList = ({ posts, handleDelete, handleLike, handleUnlike }) => {
                     className="text-danger pt-2 h5 px-2"
                   />
                 )}
-                {/* <HeartOutlined
-                  onClick={() => handleLike(post._id)}
-                  className="text-danger pt-2 h5 px-2"
-                /> */}
                 <div className="pt-2 pl-3" style={{ marginRight: '1rem' }}>
-                  3 likes
+                  {post.likes.length} likes
                 </div>
                 <CommentOutlined className="text-danger pt-2 h5 px-2" />
                 <div className="pt-2 pl-3">2 comments</div>
