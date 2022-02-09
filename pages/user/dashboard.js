@@ -10,6 +10,7 @@ import People from '../../components/cards/People';
 import Link from 'next/link';
 import { Modal, Pagination } from 'antd';
 import CommentForm from '../../components/forms/CommentForm';
+import Search from '../../components/Search';
 
 export default function Home() {
   const [state, setState] = useContext(UserContext);
@@ -77,8 +78,9 @@ export default function Home() {
       if (data.error) {
         toast.error(data.error);
       } else {
-        setPage(1);
         newsFeed();
+        setPage(1);
+        // newsFeed();
         toast.success('Post created');
         setContent('');
         setImage({});
@@ -239,12 +241,15 @@ export default function Home() {
             current={page}
             total={Math.round((totalPosts / 3) * 10)}
             onChange={(value) => setPage(value)}
+            className="pb-5"
           />
         </div>
 
         {/* <pre>{JSON.stringify(posts, null, 4)}</pre> */}
 
         <div className="col-md-4">
+          <Search />
+          <br />
           {state && state.user && state.user.following && (
             <Link href={`/user/following`}>
               <a className="h6">{state.user.following.length} Following</a>
