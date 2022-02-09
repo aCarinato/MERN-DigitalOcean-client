@@ -37,7 +37,7 @@ export default function Login() {
         });
         // save in local storage
         window.localStorage.setItem('auth', JSON.stringify(data));
-        // router.push('/user/dashboard');
+        router.push('/user/dashboard');
       }
     } catch (err) {
       toast.error(err.response.data);

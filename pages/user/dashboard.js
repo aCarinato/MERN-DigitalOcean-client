@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 import PostList from '../../components/cards/PostList';
 import People from '../../components/cards/People';
 import Link from 'next/link';
+import { Modal, Pagination } from 'antd';
+import CommentForm from '../../components/forms/CommentForm';
 
 export default function Home() {
   const [state, setState] = useContext(UserContext);
@@ -19,6 +21,14 @@ export default function Home() {
   const [posts, setPosts] = useState([]);
   // people
   const [people, setPeople] = useState([]);
+  // comments
+  const [comment, setComment] = useState('');
+  const [visible, setVisible] = useState(false);
+  const [currentPost, setCurrentPost] = useState({});
+
+  // pagination
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [page, setPage] = useState(1);
 
   // route
   const router = useRouter();
@@ -28,11 +38,19 @@ export default function Home() {
       newsFeed();
       findPeople();
     }
-  }, [state && state.token]);
+  }, [state && state.token, page]);
+
+  useEffect(() => {
+    try {
+      axios.get('/total-posts').then(({ data }) => setTotalPosts(data));
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const newsFeed = async () => {
     try {
-      const { data } = await axios.get('/news-feed');
+      const { data } = await axios.get(`/news-feed/${page}`);
       // console.log("user posts => ", data);
       setPosts(data);
     } catch (err) {
@@ -59,6 +77,7 @@ export default function Home() {
       if (data.error) {
         toast.error(data.error);
       } else {
+        setPage(1);
         newsFeed();
         toast.success('Post created');
         setContent('');
@@ -147,6 +166,45 @@ export default function Home() {
     }
   };
 
+  const handleComment = (post) => {
+    setCurrentPost(post);
+    setVisible(true);
+  };
+
+  const addComment = async (e) => {
+    e.preventDefault();
+    // console.log('add comment to this post id', currentPost._id);
+    // console.log('save comment to db', comment);
+    try {
+      const { data } = await axios.put('/add-comment', {
+        postId: currentPost._id,
+        comment,
+      });
+      console.log('add comment', data);
+      setComment('');
+      setVisible(false);
+      newsFeed();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const removeComment = async (postId, comment) => {
+    // console.log(postId, comment);
+    let answer = window.confirm('Are you sure?');
+    if (!answer) return;
+    try {
+      const { data } = await axios.put('/remove-comment', {
+        postId,
+        comment,
+      });
+      console.log('comment removed', data);
+      newsFeed();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <UserRoute>
       <div className="container-fluid">
@@ -172,6 +230,15 @@ export default function Home() {
             handleDelete={handleDelete}
             handleLike={handleLike}
             handleUnlike={handleUnlike}
+            handleComment={handleComment}
+            removeComment={removeComment}
+          />
+
+          <Pagination
+            defaultCurrent={1}
+            current={page}
+            total={Math.round((totalPosts / 3) * 10)}
+            onChange={(value) => setPage(value)}
           />
         </div>
 
@@ -185,6 +252,19 @@ export default function Home() {
           )}
           <People people={people} handleFollow={handleFollow} />
         </div>
+
+        <Modal
+          visible={visible}
+          onCancel={() => setVisible(false)}
+          title="Comment"
+          footer={null}
+        >
+          <CommentForm
+            comment={comment}
+            setComment={setComment}
+            addComment={addComment}
+          />
+        </Modal>
       </div>
     </UserRoute>
   );
