@@ -77,6 +77,7 @@ export default function Home() {
       if (data.error) {
         toast.error(data.error);
       } else {
+        setPage(1);
         newsFeed();
         toast.success('Post created');
         setContent('');
@@ -188,8 +189,20 @@ export default function Home() {
     }
   };
 
-  const removeComment = async () => {
-    //
+  const removeComment = async (postId, comment) => {
+    // console.log(postId, comment);
+    let answer = window.confirm('Are you sure?');
+    if (!answer) return;
+    try {
+      const { data } = await axios.put('/remove-comment', {
+        postId,
+        comment,
+      });
+      console.log('comment removed', data);
+      newsFeed();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -218,6 +231,7 @@ export default function Home() {
             handleLike={handleLike}
             handleUnlike={handleUnlike}
             handleComment={handleComment}
+            removeComment={removeComment}
           />
 
           <Pagination
