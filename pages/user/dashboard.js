@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import PostList from '../../components/cards/PostList';
 import People from '../../components/cards/People';
 import Link from 'next/link';
-import { Modal } from 'antd';
+import { Modal, Pagination } from 'antd';
 import CommentForm from '../../components/forms/CommentForm';
 
 export default function Home() {
@@ -26,6 +26,10 @@ export default function Home() {
   const [visible, setVisible] = useState(false);
   const [currentPost, setCurrentPost] = useState({});
 
+  // pagination
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [page, setPage] = useState(1);
+
   // route
   const router = useRouter();
 
@@ -34,11 +38,19 @@ export default function Home() {
       newsFeed();
       findPeople();
     }
-  }, [state && state.token]);
+  }, [state && state.token, page]);
+
+  useEffect(() => {
+    try {
+      axios.get('/total-posts').then(({ data }) => setTotalPosts(data));
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const newsFeed = async () => {
     try {
-      const { data } = await axios.get('/news-feed');
+      const { data } = await axios.get(`/news-feed/${page}`);
       // console.log("user posts => ", data);
       setPosts(data);
     } catch (err) {
@@ -206,6 +218,13 @@ export default function Home() {
             handleLike={handleLike}
             handleUnlike={handleUnlike}
             handleComment={handleComment}
+          />
+
+          <Pagination
+            defaultCurrent={1}
+            current={page}
+            total={Math.round((totalPosts / 3) * 10)}
+            onChange={(value) => setPage(value)}
           />
         </div>
 
